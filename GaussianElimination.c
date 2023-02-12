@@ -31,6 +31,11 @@ void eliminateEntry(float** A, float** B, unsigned dim, unsigned line, unsigned 
 {
     //TODO: function to select a pivot [non-zero]
     float pivot = A[column][column];
+    if(pivot == 0) 
+    {
+        printf("pivot is 0\n"); 
+        exit(EXIT_FAILURE); 
+    }
     float multiplier = A[line][column]/pivot; 
     for(int col = 0; col < dim; col++) A[line][col] = A[line][col] - multiplier * A[column][col]; //alter A
     B[line][0] = B[line][0] - multiplier * B[column][0]; //alter second memeber   
@@ -80,7 +85,7 @@ int main(void)
     showMatrix(B, dim, 1); 
 
     float* res = gaussianElimination(A, B, dim);
-    // showMatrix(&res, 1, dim);  
-    printf("x = %f | y = %f | z = %f\n", res[0], res[1], res[2]); 
+    showMatrix(&res, 1, dim);  
+    // printf("x = %f | y = %f | z = %f\n", res[0], res[1], res[2]); 
     return 0; 
 }
