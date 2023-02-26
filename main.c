@@ -56,3 +56,53 @@ int main(void)
 
     return 0; 
 }
+
+//cholseky + crammer
+
+// int main(){
+//     /// Test de Crammer
+//     float d;
+//     float **M,**L,*Y,*X,B[n]={0.5,0.25,1},A[n][n]={ {1,0,-0.25,-0.25},
+//                         {0,1,-0.25,-0.25},
+//                         {-0.25,-0.25,1,-0.25}}; ///{1,0,-0.25},{0,1,-0.25},{-0.25,-0.25,1}
+//     M = (float**)calloc(n,sizeof(float*));
+//     for(int i=0;i<n;i++)
+//      {
+//             M[i] = (float *)calloc(n,sizeof(float));
+//      }
+//     copyMat(A,M,n); //A=M
+//     afficher_matStat(A,n);
+//     //d=determinant(A[m],n);
+//     //afficher_matStat(A,n); ///appel erron� de la fct
+//     //printf("det(A)=%f",d);
+//     //d=determinantV2(A,n); ///M triangulaire par precess de gauss
+//     //afficher_matStat(A,n);
+//     //afficher_mat(M,n);
+//     //printf("det(A)=%f",d);
+//     //afficher_mat(M,n);
+//     //echangeCol(M,B,1,n);
+//     printf("\naffichage du second membre :\n");
+//     afficher_vect(B,n);
+//     printf("\nsolution par methode de Crammer:\n");
+//     afficher_unk(Crammer(A,B,n),n);
+//     free(M);
+
+//     ///-------------------------------------------------------------------------------
+//     /// Test de Cholesky
+
+
+//     /// Cholesky Manuelle:
+//     /* L = cholesky(A,n);
+//     afficher_matStat(A,n);
+//     afficher_mat(L,n); ///L Triangulaire inferieur
+//     afficher_mat(transposeDyn(L,n)); ///Transpose(L) triangulaire sup
+//     Y = reso_sysTriDyn(transposeDyn(L,n),B,n);
+//     afficher_unk(Y,n);
+//     X = reso_sysTriDynInv(L,Y,n);
+//     afficher_unk(X,n); */
+//     ///Cholesky Auto:
+//     printf("\nsolution par methode de cholesky:\n");
+//     afficher_unk(solChol(A,B,n),n);
+//     return 0;
+//     return 0;
+// }
