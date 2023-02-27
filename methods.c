@@ -84,12 +84,6 @@ float* gaussianElimination(float** A, float** B, unsigned dim)
         }
     }
 
-    //TODO: remove showMats
-    //display current res before final mod
-    showMatrix(A, dim, dim); 
-    showMatrix(B, dim, 1); 
-
-    //backsolving 
     return backSolve(A, B, dim);    
 }
 
@@ -348,7 +342,7 @@ float* reso_sysTriDynInv(float **L,float *B,int dim){///resoudre syst triang inf
     return X;
 }
 
-float *solChol(float A[][n],float B[],int dim){///retourne uniquement la solution X
+float *solChol(float A[n][n],float B[],int dim){///retourne uniquement la solution X
         float **L=(float**)calloc(dim,sizeof(float *)); ///se libere apres le retour de la fct
         float **Lt=(float**)calloc(dim,sizeof(float *));///se libere apres le retour de la fct
         float *Y=(float*)calloc(dim,sizeof(float)); ///inconnue temp

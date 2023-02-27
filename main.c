@@ -25,52 +25,50 @@
 // }
 
 
-//LU main function
-int main(void)
-{
-    unsigned dim; 
-    printf("dim(A) = "); 
-    scanf("%u", &dim); 
+// //LU main function
+// int main(void)
+// {
+//     unsigned dim; 
+//     printf("dim(A) = "); 
+//     scanf("%u", &dim); 
 
-    float* A[dim];
-    printf("A : \n");  
-    fillMatrix(A, dim, dim); 
-    showMatrix(A, dim, dim); 
+//     float* A[dim];
+//     printf("A : \n");  
+//     fillMatrix(A, dim, dim); 
+//     showMatrix(A, dim, dim); 
 
-    float* B[dim];
-    printf("B : \n");  
-    fillMatrix(B, dim, 1); 
-    showMatrix(B, dim, 1);
+//     float* B[dim];
+//     printf("B : \n");  
+//     fillMatrix(B, dim, 1); 
+//     showMatrix(B, dim, 1);
 
-    float* L[dim];
-    float* solution = LU(A, B, dim, L); 
+//     float* L[dim];
+//     float* solution = LU(A, B, dim, L); 
 
-    printf("U : \n"); 
-    showMatrix(A, dim, dim);
+//     printf("U : \n"); 
+//     showMatrix(A, dim, dim);
 
-    printf("L : \n"); 
-    showMatrix(L, dim, dim); 
+//     printf("L : \n"); 
+//     showMatrix(L, dim, dim); 
 
-    printf("Solution : \n");
-    showMatrix(&solution, 1, dim);
+//     printf("Solution : \n");
+//     showMatrix(&solution, 1, dim);
 
-    return 0; 
-}
+//     return 0; 
+// }
 
 //cholseky + crammer
 
 // int main(){
 //     /// Test de Crammer
-//     float d;
-//     float **M,**L,*Y,*X,B[n]={0.5,0.25,1},A[n][n]={ {1,0,-0.25,-0.25},
-//                         {0,1,-0.25,-0.25},
-//                         {-0.25,-0.25,1,-0.25}}; ///{1,0,-0.25},{0,1,-0.25},{-0.25,-0.25,1}
-//     M = (float**)calloc(n,sizeof(float*));
+//     float **M,B[n]={0.5,0.25,1},A[n][n]={ {1,0,-0.25},
+//                         {0,1,-0.25},
+//                         {-0.25,-0.25,1}}; ///{1,0,-0.25},{0,1,-0.25},{-0.25,-0.25,1}
 //     for(int i=0;i<n;i++)
 //      {
 //             M[i] = (float *)calloc(n,sizeof(float));
 //      }
-//     copyMat(A,M,n); //A=M
+//      //A=M
 //     afficher_matStat(A,n);
 //     //d=determinant(A[m],n);
 //     //afficher_matStat(A,n); ///appel erron� de la fct
@@ -84,7 +82,7 @@ int main(void)
 //     printf("\naffichage du second membre :\n");
 //     afficher_vect(B,n);
 //     printf("\nsolution par methode de Crammer:\n");
-//     afficher_unk(Crammer(A,B,n),n);
+//     afficher_unk(Crammer((float**)A,B,n),n);
 //     free(M);
 
 //     ///-------------------------------------------------------------------------------
@@ -106,3 +104,77 @@ int main(void)
 //     return 0;
 //     return 0;
 // }
+
+
+int main(void)
+{
+    unsigned option; 
+    do
+    {
+        printf("========= Menu ==========\n");
+        printf("Methodes directes: \n"); 
+        printf("\t1-Methode de Crammer\n\t2-Methode LLt\n\t3-Methode LU\n\t4-Methode de Gauss\n\n");  
+        printf("Methodes iteratives: \n"); 
+        printf("\t5-Methode de jacobi\n\t6-Methode de Gausse-Sciedle\n");  
+        printf("7-Quitter"); 
+        printf("=========================\n");
+        printf("Option : "); scanf("%u", &option); 
+
+        unsigned dim; 
+        printf("dim(A) = "); scanf("%u", &dim); 
+        
+        float *A[dim], *B[dim], AAux[dim][dim]; 
+        float Baux[dim];
+        // M = (float**)calloc(dim,sizeof(float*));
+
+        printf("Matrice A : \n"); 
+        fillMatrix(A, dim, dim); 
+        printf("\nMatrice B : \n"); 
+        fillMatrix(B, dim, 1);
+    
+        float* L[dim], *solution;
+
+        switch(option)
+        {
+            case 1: //Methode de crammer
+                for(int i=0; i<dim; i++) Baux[i] = B[i][0]; 
+                for(int l=0; l<dim; l++) for(int c=0; c<dim; c++) AAux[l][c] = A[l][c]; 
+                printf("\nSolution : \n"); 
+                afficher_unk(Crammer(AAux,Baux,dim),dim);  
+                break;
+            case 2: //Methode LLt
+                for(int i=0; i<dim; i++) Baux[i] = B[i][0]; 
+                for(int l=0; l<dim; l++) for(int c=0; c<dim; c++) AAux[l][c] = A[l][c]; 
+                printf("\nSolution : \n"); 
+                afficher_unk(solChol(AAux,Baux,dim),dim);
+                break; 
+            case 3: //Methode LU
+                solution = LU(A, B, dim, L);
+                printf("\nU : \n"); 
+                showMatrix(A, dim, dim);
+
+                printf("L : \n"); 
+                showMatrix(L, dim, dim); 
+
+                printf("Solution : \n");
+                showMatrix(&solution, 1, dim);
+                break; 
+            case 4: //Methode de gausse
+                solution = gaussianElimination(A, B, dim);
+
+                printf("\nMatrice A apres les operations : \n"); 
+                showMatrix(A, dim, dim); 
+
+                printf("Matrice B apres les operations : \n"); 
+                showMatrix(B, dim, 1); 
+
+                printf("\nSolution : \n"); 
+                showMatrix(&solution, 1, dim);  
+                break; 
+            case 5:
+                break; 
+            case 6:
+                break; 
+        }
+    } while (option != 7);
+}
