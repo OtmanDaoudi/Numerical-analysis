@@ -113,7 +113,7 @@ int main(void)
     {
         printf("========= Menu ==========\n");
         printf("Methodes directes: \n"); 
-        printf("\t1-Methode de Crammer\n\t2-Methode LLt\n\t3-Methode LU\n\t4-Methode de Gauss\n\n");  
+        printf("\t1-Method LU\n\t2-Method de gauss\n\t3-Methode de crammer\n\t4-Methode LLt\n\n");  
         printf("Methodes iteratives: \n"); 
         printf("\t5-Methode de jacobi\n\t6-Methode de Gausse-Sciedle\n");  
         printf("7-Quitter"); 
@@ -123,8 +123,7 @@ int main(void)
         unsigned dim; 
         printf("dim(A) = "); scanf("%u", &dim); 
         
-        float *A[dim], *B[dim], AAux[dim][dim]; 
-        float Baux[dim];
+        float *A[dim], *B[dim], AAux[dim][dim], Baux[dim];
         // M = (float**)calloc(dim,sizeof(float*));
 
         printf("Matrice A : \n"); 
@@ -136,19 +135,19 @@ int main(void)
 
         switch(option)
         {
-            case 1: //Methode de crammer
+            case 3: //Methode de crammer
                 for(int i=0; i<dim; i++) Baux[i] = B[i][0]; 
                 for(int l=0; l<dim; l++) for(int c=0; c<dim; c++) AAux[l][c] = A[l][c]; 
                 printf("\nSolution : \n"); 
                 afficher_unk(Crammer(AAux,Baux,dim),dim);  
                 break;
-            case 2: //Methode LLt
+            case 4: //Methode LLt
                 for(int i=0; i<dim; i++) Baux[i] = B[i][0]; 
                 for(int l=0; l<dim; l++) for(int c=0; c<dim; c++) AAux[l][c] = A[l][c]; 
                 printf("\nSolution : \n"); 
                 afficher_unk(solChol(AAux,Baux,dim),dim);
                 break; 
-            case 3: //Methode LU
+            case 1: //Methode LU
                 solution = LU(A, B, dim, L);
                 printf("\nU : \n"); 
                 showMatrix(A, dim, dim);
@@ -159,9 +158,8 @@ int main(void)
                 printf("Solution : \n");
                 showMatrix(&solution, 1, dim);
                 break; 
-            case 4: //Methode de gausse
+            case 2: //Methode de gausse
                 solution = gaussianElimination(A, B, dim);
-
                 printf("\nMatrice A apres les operations : \n"); 
                 showMatrix(A, dim, dim); 
 
@@ -171,9 +169,31 @@ int main(void)
                 printf("\nSolution : \n"); 
                 showMatrix(&solution, 1, dim);  
                 break; 
-            case 5:
+            case 5: //methode jacobi
+                for(int i=0; i<dim; i++) Baux[i] = B[i][0]; 
+                solution = (float*)malloc(sizeof(float) * dim);
+                printf("Solution intitiale : \n"); 
+                for(int i=0; i<dim; i++)
+                {
+                    printf("Mat[%d] = ", i); 
+                    scanf("%f", solution+i);
+                }
+                jacobi(A, Baux, solution, dim);
+                printf("\nSolution : \n"); 
+                showMatrix(&solution, 1, dim);
                 break; 
-            case 6:
+            case 6: //gauss siedle
+                for(int i=0; i<dim; i++) Baux[i] = B[i][0]; 
+                solution = (float*)malloc(sizeof(float) * dim);
+                printf("Solution intitiale : \n"); 
+                for(int i=0; i<dim; i++)
+                {
+                    printf("Mat[%d] = ", i); 
+                    scanf("%f", solution+i);
+                }
+                gauss_seidel(A, Baux, solution, dim); 
+                printf("\nSolution : \n"); 
+                showMatrix(&solution, 1, dim);
                 break; 
         }
     } while (option != 7);

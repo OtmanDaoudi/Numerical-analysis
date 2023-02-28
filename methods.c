@@ -129,7 +129,7 @@ float* LU(float** A,float** B, unsigned dim, float** L) //return L
 
 
 /// partie Crammer
-float determinant(float A[][n],float **mat_res, int dim){ ///triangularise la mat_res et retourne det(A)
+float determinant(float** A,float **mat_res, int dim){ ///triangularise la mat_res et retourne det(A)
     int signe = 1;
     float pivot, coef,det=1;
 
@@ -173,7 +173,7 @@ float determinant(float A[][n],float **mat_res, int dim){ ///triangularise la ma
 
    return signe * det;
 }
-float determinantV2(float A[][n], int dim){   /// version sans matrice result
+float determinantV2(float** A, int dim){   /// version sans matrice result
     float **mat_res=(float**)calloc(dim,sizeof(float*));
     for(int i=0;i<dim;i++)
      {
@@ -224,7 +224,7 @@ float determinantV2(float A[][n], int dim){   /// version sans matrice result
    return signe * det;
 }
 
-void copyMat(float A[n][n],float **mat_cpy,int dim){ ///n'oublie pas allocation dynam de mat_cpy
+void copyMat(float** A,float **mat_cpy,int dim){ ///n'oublie pas allocation dynam de mat_cpy
     for(int i=0;i<dim;i++)
     {
         for(int j=0;j<dim;j++)
@@ -261,7 +261,7 @@ float *Crammer(float **A,float *B,int dim){///resolution de AX=B
 }
 
 /// Partie de cholesky
-float ** cholesky(float A[n][n],int dim){///retourne la matrice L triang inf
+float ** cholesky(float** A,int dim){///retourne la matrice L triang inf
     float **L;
     float sum=0;
     ///inisialisation de L
@@ -312,13 +312,13 @@ float **transposeDyn(float **L,int dim){
      return Lt;
 }
 
-float* reso_sysTriDyn(float **L,float B[n],int dim){ ///resoudre syst triang sup par remont�e
+float* reso_sysTriDyn(float **L,float* B,int dim){ ///resoudre syst triang sup par remont�e
     float *X =(float *)calloc(dim,sizeof(float));
-    X[n-1]=B[n-1]/ *(*(L+n-1)+n-1); ///first index = 0 & last n-1 ! A[n-1][n-1]
-    for(int i=n-1;i>=0;i--)
+    X[dim-1]=B[dim-1]/ *(*(L+dim-1)+dim-1); ///first index = 0 & last n-1 ! A[n-1][n-1]
+    for(int i=dim-1;i>=0;i--)
     {
         float sum=0;
-        for (int j=n-1;j>i;j--)
+        for (int j=dim-1;j>i;j--)
         {
             sum += *(*(L+i)+j)*X[j]; ///A[i][j]
             X[i] = (B[i]-sum)/ *(*(L+i)+i) ;///A[i][i]
@@ -342,18 +342,22 @@ float* reso_sysTriDynInv(float **L,float *B,int dim){///resoudre syst triang inf
     return X;
 }
 
-float *solChol(float A[n][n],float B[],int dim){///retourne uniquement la solution X
+float *solChol(float** A,float* B,int dim){///retourne uniquement la solution X
         float **L=(float**)calloc(dim,sizeof(float *)); ///se libere apres le retour de la fct
         float **Lt=(float**)calloc(dim,sizeof(float *));///se libere apres le retour de la fct
         float *Y=(float*)calloc(dim,sizeof(float)); ///inconnue temp
         float *X=(float*)calloc(dim,sizeof(float)); ///incon return�e
-        for(int i=0;i<n;i++)
+        for(int i=0;i<dim;i++)
         {
-            *(L+i) = (float *)calloc(n,sizeof(float));
-             Lt[i] = (float *)calloc(n,sizeof(float));
+            *(L+i) = (float *)calloc(dim,sizeof(float));
+             Lt[i] = (float *)calloc(dim,sizeof(float));
         }
         L = cholesky(A,dim);
-        Lt=transposeDyn(L,dim);
+        printf("L :\n"); 
+        afficher_mat(L, dim); 
+        Lt= transposeDyn(L,dim);
+        printf("Lt :\n"); 
+        afficher_mat(Lt, dim); 
         Y = reso_sysTriDyn(transposeDyn(L,dim),B,dim);
         X = reso_sysTriDynInv(L,Y,dim);
         return X;
@@ -388,7 +392,7 @@ void afficher_unk(float *X,int dim){ ///afficher vect X
 }
 
 void afficher_mat(float **X,int dim){///affichage de matrice dynamique
-    printf("L=\n");
+    // printf("L=\n");
     for(int i=0;i<dim;i++)
     {
         for(int j=0;j<dim;j++)
@@ -403,7 +407,7 @@ void afficher_mat(float **X,int dim){///affichage de matrice dynamique
     }
 }
 
-void afficher_matStat(float X[n][n],int dim){///affichage de matrice statique
+void afficher_matStat(float** X,int dim){///affichage de matrice statique
     printf("A=\n");
     for(int i=0;i<dim;i++)
     {
@@ -417,4 +421,114 @@ void afficher_matStat(float X[n][n],int dim){///affichage de matrice statique
             printf("%f,",X[i][j]);
         }
     }
+}
+
+
+int diag_domin(float** A, int n)
+{
+    int i, j;
+    float sum;
+
+    for (i = 0; i < n; i++)
+    {
+        sum = 0.0;
+        for (j = 0; j < n; j++)
+        {
+            if (j != i)
+            {
+                sum += fabs(A[i][j]);
+            }
+        }
+        if (fabs(A[i][i]) <= sum)
+        {
+            return 0; // la matrice n'est pas diagonalement dominante
+        }
+    }
+    return 1; // la matrice est diagonalement dominante
+}
+
+void jacobi(float** A, float* b ,float *x, int n)
+{
+    int i, j, k, aide;
+    float* x_new;
+    float diff, sum;
+
+    x_new = (float*)malloc(n * sizeof(float));
+
+
+    for (k = 1; k <= 1000; k++)
+    {
+        aide = 1; // indicateur de convergence
+
+        // calculer les nouvelles valeurs de x
+        for (i = 0; i < n; i++)
+        {
+            sum = 0.0;
+            for (j = 0; j < n; j++)
+            {
+                if (j != i)
+                {
+                    sum += A[i][j] * x[j];
+                }
+            }
+            x_new[i] = (b[i] - sum) / A[i][i];
+        }
+
+        // v�rifier si la solution a converg�
+        for (i = 0; i < n; i++)
+        {
+            diff = fabs(x_new[i] - x[i]);
+            if (diff > EPSILON)
+            {
+                aide = 0;
+                break;
+            }
+        }
+
+        // remplacer x par les nouvelles valeurs
+        for (i = 0; i < n; i++)
+        {
+            x[i] = x_new[i];
+        }
+
+        // sortir de la boucle
+        if (aide)
+        {
+            printf("Methode de Jacobi converge en %d iterations.\n", k);
+            break;
+        }
+    }
+
+    free(x_new);
+}
+
+void gauss_seidel(double** A, double* b, double* x, int dim)
+{
+    int i, j, k;
+    double norme, somme;
+    double y[dim];
+    for (k = 0; k < 1000; k++)   // 1000 nombre maximal d'iterations
+    {
+        norme = 0.0;
+        for (i = 0; i < dim; i++)
+        {
+            somme = b[i];
+            for (j = 0; j < dim; j++)
+            {
+                if (i != j)
+                {
+                    somme -= A[i][j] * x[j];
+                }
+            }
+            x[i] = somme / A[i][i];
+            norme += fabs(x[i] - y[i]);
+        }
+        if (norme < EPSILON)
+        {
+            printf("Gauss-Seidel a converge en %d iterations\n", k + 1);
+            return;
+        }
+    }
+
+    printf("Gauss-Seidel n'a pas converge en %d iterations\n", k);
 }
